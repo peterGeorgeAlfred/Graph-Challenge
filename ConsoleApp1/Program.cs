@@ -5,8 +5,8 @@ namespace ConsoleApp1
 {
     class Program
     {
-        //static string[] input = { "4", "A", "B", "C", "D", "A-B", "A_B", "B-C", "C-D" };
-        static string[] input = { "7", "A", "B", "C", "D", "E", "F", "G", "A-B", "A-E", "A-F","B-C", "C-D", "D-F", "E-D", "F-G" };
+        static string[] input = { "4", "A", "B", "C", "D", "A-B",  "B-C", "C-D" };
+       // static string[] input = { "7", "A", "B", "C", "D", "E", "F", "G", "A-B", "A-E","B-C", "C-D", "D-F", "E-D", "F-G" };
         //static string[] input = { "4", "X", "Y", "Z", "W", "A-B", "A-E", "X-Y", "Y-Z","X-W"};
         //static string[] input = { "5", "A", "B", "C", "D","F", "A-B", "A-C", "B-C", "C-D","D-F"};
 
@@ -14,7 +14,8 @@ namespace ConsoleApp1
         static string fixedFirst;
         static string fixedLast;
         static  Dictionary<string, List<string>> FamilyTree = new Dictionary<string, List<string>>();
-        static List<string> paths = new List<string>(); 
+        static List<string> paths = new List<string>();
+        static List<string> validPaths = new List<string>(); 
 
         static void Main(string[] args)
         {
@@ -36,9 +37,10 @@ namespace ConsoleApp1
 
             fillTreefamily(Chars, Connections);
             intialPath(fixedFirst);
-            CompletePath(isFinished());
+            CompletePath(isAllFinished());
+           
 
-            RemoveNotValidPath();
+            findValidPath();
             string  path =  findSmallestPath();
           
            
@@ -99,38 +101,41 @@ namespace ConsoleApp1
                     
 
                 
-                isCompleted = isFinished();
+                isCompleted = isAllFinished();
             }
            
         }
 
-        static bool isFinished()
+        static bool isAllFinished()
         {
+            bool result = true; 
             foreach (var path in paths)
             {
                 char lastChar = path[path.Length - 1];
-                if (lastChar.ToString() == fixedLast)
-                    return true; 
+                if ( !(lastChar.ToString() == fixedLast) )
+                    result = false ; 
             }
-            return false; 
+            return result; 
         }
 
-        static void RemoveNotValidPath()
+        static void findValidPath()
         {
             for (int i = 0; i < paths.Count; i++)
             {
-                if (!(paths[i][paths[i].Length - 1].ToString() == fixedLast))
-                    paths.Remove(paths[i]); 
+                string path = paths[i];
+                char last = path[path.Length - 1];
+                if ((last.ToString() == fixedLast))
+                    validPaths.Add(paths[i]); 
             }
         }
 
         static string findSmallestPath()
         {
-            int min = length;
+            int min = length + (length-1);
             string result = string.Empty;
-            foreach (var path in paths)
+            foreach (var path in validPaths)
             {
-                if( path.Length < min )
+                if( path.Length <= min )
                 {
                     min = path.Length;
                     result = path; 
